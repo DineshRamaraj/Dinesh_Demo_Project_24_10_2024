@@ -8,31 +8,48 @@ const Home = () => {
   const [blogList, setBlogList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [pageNo, setPageNo] = useState(1);
-//   const [perPageSize, setPerPageSize] = useState(10);
+  //   const [perPageSize, setPerPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(10);
   const perPageSize = 12;
 
-  const getBlogList = async () => {
-    const apiUrl = "https://dummyapi.online/api/blogposts";
-    const response = await fetch(apiUrl);
-    const dataList = await response.json();
-    setBlogList(dataList.slice((pageNo-1)*12, pageNo*12));
-    setIsLoading(false);
-    setTotalItems(dataList.length);
-    // console.log(dataList);
-  };
-
+//   const getBlogList = async () => {
+//     const apiUrl = "https://dummyapi.online/api/blogposts";
+//     const response = await fetch(apiUrl);
+//     const dataList = await response.json();
+//     setBlogList(
+//       dataList.slice((pageNo - 1) * perPageSize, pageNo * perPageSize)
+//     );
+//     setIsLoading(false);
+//     setTotalItems(dataList.length);
+//     // console.log(dataList);
+//   };
 
   useEffect(() => {
     setIsLoading(true);
+    const getBlogList = async () => {
+      const apiUrl = "https://dummyapi.online/api/blogposts";
+      setIsLoading(true);
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("Network response was not ok");
+        const dataList = await response.json();
+        setBlogList(
+          dataList.slice((pageNo - 1) * perPageSize, pageNo * perPageSize)
+        );
+        setTotalItems(dataList.length);
+      } catch (error) {
+        console.error("Error fetching blog posts:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     getBlogList();
-  }, [pageNo, blogList]);
+  }, [pageNo]);
 
-//   const onChangePerPageSize = () => {
-//     setPerPageSize(20);
-//   }
+  //   const onChangePerPageSize = () => {
+  //     setPerPageSize(20);
+  //   }
 
-  
   const onPageChange = (pageNoValue) => {
     setPageNo(pageNoValue);
   };
